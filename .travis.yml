@@ -37,16 +37,28 @@ matrix:
       dist: xenial
       env: MATRIX_EVAL="CC=clang"
 
+    - name: "OSX -- clang"
+      os: osx
+      env: MATRIX_EVAL="CC=clang"
+
 #
 before_install:
-  - sudo apt-get install -y regina-rexx libregina3-dev
+  - |
+    if [ $TRAVIS_OS_NAME == linux ]; then
+      sudo apt-get install -y regina-rexx libregina3-dev
+    fi
   - eval "${MATRIX_EVAL}"
 
 #
 before_script:
   - util/bldlvlck
   - ./autogen.sh
-  - ./configure --enable-regina-rexx
+  - |
+    if [ $TRAVIS_OS_NAME == linux ]; then
+      ./configure --enable-regina-rexx
+    else
+      ./configure --arch=x86_64
+    fi
   - bash -c '${CC} --version'
 
 #
